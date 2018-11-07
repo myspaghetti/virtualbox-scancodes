@@ -67,6 +67,7 @@ declare -A ksc=(
     ["SPACE"]="39 B9"
     [" "]="39 B9"
     ["CAPS"]="3A BA"
+    ["CAPSLOCK"]="3A BA"
     ["F1"]="3B BB"
     ["F2"]="3C BC"
     ["F3"]="3D BD"
@@ -137,18 +138,39 @@ declare -A ksc=(
     ["?"]="2A 35 B5 AA"
 )
 
-# send-string-as-keyboard-keystrokes and send-special-key to virtual machine
+# read variable kbstring and convert string to scancodes and send to guest vm
 function sendkeys() {
+    read -p "Enter VM name: " vmname
+    read -p "Enter string: " kbstring
     scancode=$(for (( i=0; i < ${#kbstring}; i++ ));
                do c[i]=${kbstring:i:1}; echo -n ${ksc[${c[i]}]}" "; done)
-    scancode="${scancode}"
+    scancode="${scancode} ${ksc['ENTER']}"
     VBoxManage controlvm "${vmname}" keyboardputscancode ${scancode}
 }
 
+# read variable kbspecial and send keystrokes by name,
+# for example "CTRLprs c CTRLrls", and send to guest vm
 function sendspecial() {
+    read -p "Enter VM name: " vmname
+    read -p "Enter names of special characters, space delimited: " kbspecial
     scancode=""
     for keypress in ${kbspecial}; do
         scancode="${scancode}${ksc[${keypress}]}"" "
     done
     VBoxManage controlvm "${vmname}" keyboardputscancode ${scancode}
 }
+
+function sendenter() {
+    read -p "Enter VM name: " vmname
+    kbspecial="ENTER"
+    VBoxManage controlvm "${vmname}" keyboardputscancode ${scancode}
+}
+
+alias printksc="declare -p ksc | grep -o '[A-Z][A-Z][A-Z][A-Za-z]*' | sort -d"
+
+printf 'Usage:
+source scancodes.sh - loads functions from script
+sendkeys - sends a string of ASCII keys as typed
+sendspecial - sends special characters by name, space delimited
+sendenter - sends ENTER key
+printksc - print names of special key scancodes'
