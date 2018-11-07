@@ -4,8 +4,8 @@ Send keys when the VirtualBox guest has no sensible way of communicating with th
 
 # Usage
 
-source scancodes.sh - loads functions from script
-sendkeys - sends a string of ASCII keys as typed
-sendspecial - sends special characters by name, space delimited
-sendenter - sends ENTER key
+source scancodes.sh - loads functions from script  
+sendkeys - sends a string of ASCII keys as typed  
+sendspecial - sends special characters by name, space delimited  
+sendenter - sends ENTER key  
 printksc - print names of special key scancodes
