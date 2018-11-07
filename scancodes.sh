@@ -138,20 +138,30 @@ declare -A ksc=(
     ["?"]="2A 35 B5 AA"
 )
 
+function getvmname() {
+    if [ -z "${vmname}" ]; then
+        read -p "Enter VM name: " vmname
+        export vmname="${vmname}"
+    fi
+}
+
+function clearvmname() {
+    vmname=""
+}
+
 # read variable kbstring and convert string to scancodes and send to guest vm
 function sendkeys() {
-    read -p "Enter VM name: " vmname
+    getvmname
     read -p "Enter string: " kbstring
     scancode=$(for (( i=0; i < ${#kbstring}; i++ ));
                do c[i]=${kbstring:i:1}; echo -n ${ksc[${c[i]}]}" "; done)
-    scancode="${scancode} ${ksc['ENTER']}"
     VBoxManage controlvm "${vmname}" keyboardputscancode ${scancode}
 }
 
 # read variable kbspecial and send keystrokes by name,
 # for example "CTRLprs c CTRLrls", and send to guest vm
 function sendspecial() {
-    read -p "Enter VM name: " vmname
+    getvmname
     read -p "Enter names of special characters, space delimited: " kbspecial
     scancode=""
     for keypress in ${kbspecial}; do
@@ -161,15 +171,16 @@ function sendspecial() {
 }
 
 function sendenter() {
-    read -p "Enter VM name: " vmname
-    kbspecial="ENTER"
-    VBoxManage controlvm "${vmname}" keyboardputscancode ${scancode}
+    getvmname
+    VBoxManage controlvm "${vmname}" keyboardputscancode 1C 9C
 }
 
 alias printksc="declare -p ksc | grep -o '[A-Z][A-Z][A-Z][A-Za-z]*' | sort -d"
 
 printf 'source scancodes.sh - loads functions from script
-sendkeys - read VM name; read a string of ASCII characters and send them as scancodes to the guest virtual machine
-sendspecial - read VM name; read the names of special characters by name, space delimited
-sendenter - read VM name; send ENTER key
+getvmname - read VM name and export to variable "vmname"
+clearvmname - clear variable "vmname"
+sendkeys - read a string of ASCII characters and send them as scancodes to the guest virtual machine
+sendenter - send ENTER key
+sendspecial - read the names of special characters by name, space delimited
 printksc - print names of recognized special keys'
