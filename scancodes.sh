@@ -1,4 +1,8 @@
 #!/bin/bash
+# (c) img2tab - https://github.com/img2tab/virtualbox-scancodes/
+# Licensed under GPL 2.0 or higher
+# version 0.1
+
 # QWERTY-to-scancode dictionary. Hex scancodes, keydown and keyup event.
 # Virtualbox Mac scancodes found here:
 # https://wiki.osdev.org/PS/2_Keyboard#Scan_Code_Set_1
@@ -177,10 +181,13 @@ function sendenter() {
 
 alias printksc="declare -p ksc | grep -o '[A-Z][A-Z][A-Z][A-Za-z]*' | sort -d"
 
-printf 'source scancodes.sh - loads functions from script
-getvmname - read VM name and export to variable "vmname"
-clearvmname - clear variable "vmname"
-sendkeys - read a string of ASCII characters and send them as scancodes to the guest virtual machine
-sendenter - send ENTER key
-sendspecial - read the names of special characters by name, space delimited
-printksc - print names of recognized special keys'
+printf '
+source scancodes.sh - load functions from script
+getvmname           - read VM name and export to variable "vmname"
+clearvmname         - clear variable "vmname"
+sendkeys            - read a string of ASCII characters and send them as
+                      scancodes to the virtual machine
+sendenter           - send ENTER key scancode to the virtual machine
+sendspecial         - read special characters by name, space delimited,
+                      and send them as scancodes to the virtual machine
+printksc            - print names of recognized special keys'
